@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles */
+body {
+  @apply bg-gray-100 text-gray-900;
+  font-family: 'Inter', sans-serif;
+}
+
+.container {
+  @apply max-w-6xl mx-auto px-4;
+}
+
+button {
+  @apply px-4 py-2 rounded-lg font-medium transition duration-200;
+}
+
+button.primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+button.secondary {
+  @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+}
+
+input, select, textarea {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.card {
+  @apply bg-white shadow-md rounded-lg p-4;
+}
