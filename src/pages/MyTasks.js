@@ -1,26 +1,48 @@
 import React, { useState, useEffect } from "react";
-import supabase from "../utils/supabaseClient"; // Adjust based on your setup
+import { useAuth } from "../context/AuthContext"; // Import auth context
+import supabase from "../utils/supabaseClient";
+import { useNavigate } from "react-router-dom"; // For redirection
 
 const MyTasks = () => {
+  const { user, loading } = useAuth(); // Get user state
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [tasksLoading, setTasksLoading] = useState(true);
 
-  // Fetch tasks from Supabase
+  // Redirect to login if user is not authenticated
   useEffect(() => {
-    const fetchTasks = async () => {
-      const { data, error } = await supabase.from("tasks").select("*").eq("user_id", "YOUR_USER_ID"); // Replace with actual user ID logic
+    if (!loading && !user) {
+      navigate("/login");
+    }
+  }, [user, loading, navigate]);
+
+  // Fetch tasks only when user is available
+  useEffect(() => {
+    if (user) {
+      fetchTasks();
+    }
+  }, [user]);
+
+  const fetchTasks = async () => {
+    setTasksLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("user_id", user.id); // Fetch only tasks for the logged-in user
+
       if (error) {
         console.error("Error fetching tasks:", error);
       } else {
         setTasks(data);
       }
-      setLoading(false);
-    };
-
-    fetchTasks();
-  }, []);
+    } catch (err) {
+      console.error("Fetch tasks failed:", err);
+    }
+    setTasksLoading(false);
+  };
 
   const deleteTask = async (id) => {
     const { error } = await supabase.from("tasks").delete().eq("id", id);
@@ -33,7 +55,8 @@ const MyTasks = () => {
     }
   };
 
-  if (loading) return <p className="text-center text-gray-500">Loading tasks...</p>;
+  if (loading) return <p className="text-center text-gray-500">Checking authentication...</p>;
+  if (tasksLoading) return <p className="text-center text-gray-500">Loading tasks...</p>;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-100 to-indigo-100 p-6">

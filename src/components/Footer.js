@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone } from 'lucide-react';
+import { FacebookIcon, TwitterIcon, InstagramIcon, LinkedinIcon, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
     return (
@@ -47,10 +47,10 @@ const Footer = () => {
                 <div className="mt-8 flex flex-col md:flex-row items-center justify-between text-gray-400">
                     <p>© 2025 QuickTask. All rights reserved.</p>
                     <div className="flex space-x-4 mt-4 md:mt-0">
-                        <a href="#" className="hover:text-yellow-400 transition"><Facebook className="h-6 w-6" /></a>
-                        <a href="#" className="hover:text-yellow-400 transition"><Twitter className="h-6 w-6" /></a>
-                        <a href="#" className="hover:text-yellow-400 transition"><Instagram className="h-6 w-6" /></a>
-                        <a href="#" className="hover:text-yellow-400 transition"><Linkedin className="h-6 w-6" /></a>
+                        <a href="#" className="hover:text-yellow-400 transition"><FacebookIcon className="h-6 w-6" /></a>
+                        <a href="#" className="hover:text-yellow-400 transition"><TwitterIcon className="h-6 w-6" /></a>
+                        <a href="#" className="hover:text-yellow-400 transition"><InstagramIcon className="h-6 w-6" /></a>
+                        <a href="#" className="hover:text-yellow-400 transition"><LinkedinIcon className="h-6 w-6" /></a>
                     </div>
                 </div>
             </div>

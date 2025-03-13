@@ -7,8 +7,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
-import MyTasks from "./pages/MyTasks"; // ✅ Changed to component
-import MyBids from "./components/MyBids"; // ✅ Changed to component
+import MyTasks from "./pages/MyTasks";
+import MyBids from "./components/MyBids";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -17,11 +17,11 @@ import Footer from "./components/Footer";
 import TaskDetail from "./components/TaskDetail"; 
 import Bidding from "./components/Bidding";
 import CreateTask from "./components/CreateTask";
-import UserProfile from "./pages/UserProfile";
+import UserProfile from "./pages/UserProfile"; // ✅ Ensured UserProfile is imported
 import Messages from "./pages/Messages";
 import Groups from "./pages/Groups";
 import Posts from "./pages/Posts";
-import Notifications from "./pages/Notifications"; // ✅ Added missing import
+import Notifications from "./pages/Notifications";
 
 function Layout({ children }) {
   const location = useLocation();
@@ -150,6 +150,8 @@ function AppContent() {
         <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
         <Route path="/posts" element={<ProtectedRoute><Posts /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+
+        {/* ✅ User Profile Route (Ensured it's included) */}
         <Route path="/profile/:id" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
 
         {/* Task Details (Component) */}

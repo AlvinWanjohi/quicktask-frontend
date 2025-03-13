@@ -1,9 +1,21 @@
-import supabase from "../utils/supabaseClient"; // Assuming you have a Supabase client utility
+import supabase from "../utils/supabaseClient";
 
-// Register a new user
+// Helper function to get auth token
+const getAuthToken = () => localStorage.getItem("token");
+
+// Helper function to set authorization headers
+const authHeaders = () => ({
+  headers: {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getAuthToken()}`, // Ensure Bearer is included
+  },
+});
+
+// 🟢 Register User
 export const registerUser = async (userData) => {
   try {
-    const { fullName, email, password } = userData; // Removed profilePhoto & location
+    const { fullName, email, password } = userData;
 
     const { data, error: registerError } = await supabase.auth.signUp({
       email,
@@ -11,6 +23,7 @@ export const registerUser = async (userData) => {
     });
 
     if (registerError) {
+      console.error("Supabase Registration Error:", registerError.message);
       throw registerError;
     }
 
@@ -18,32 +31,23 @@ export const registerUser = async (userData) => {
     const token = data?.session?.access_token;
 
     if (user?.id && token) {
-      localStorage.setItem("token", token); // Store JWT token
+      localStorage.setItem("token", token);
 
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/users/${user.id}`, {
-          method: "PUT",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // Include JWT token
-          },
-          body: JSON.stringify({
-            fullName, // Ensure you're passing actual user details
-            email,
-          }),
-          mode: "cors",
-        });
+      // Update user details in backend
+      const response = await fetch(`http://127.0.0.1:5000/users/${user.id}`, {
+        method: "PUT",
+        ...authHeaders(), // Use helper function
+        body: JSON.stringify({ fullName, email }),
+      });
 
-        if (!response.ok) {
-          throw new Error(`Failed to update user: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("User updated successfully:", data);
-      } catch (error) {
-        console.error("Error updating user:", error);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Failed to update user:", response.status, errorText);
+        throw new Error(`Failed to update user: ${response.statusText}`);
       }
+
+      const updatedUser = await response.json();
+      console.log("User updated successfully:", updatedUser);
     }
 
     return { user, message: "Registration successful!" };
@@ -53,7 +57,7 @@ export const registerUser = async (userData) => {
   }
 };
 
-// Log in a user with provided credentials
+// 🟢 Login User
 export const loginUser = async (credentials) => {
   try {
     const { email, password } = credentials;
@@ -63,6 +67,7 @@ export const loginUser = async (credentials) => {
     });
 
     if (loginError) {
+      console.error("Supabase Login Error:", loginError.message);
       throw loginError;
     }
 
@@ -80,7 +85,7 @@ export const loginUser = async (credentials) => {
   }
 };
 
-// Log out the user
+// 🟢 Logout User
 export const logoutUser = () => {
   try {
     supabase.auth.signOut();
@@ -91,19 +96,18 @@ export const logoutUser = () => {
   }
 };
 
-// Verify user's email
+// 🟢 Verify Email
 export const verifyEmail = async (token) => {
   try {
     const response = await fetch("http://127.0.0.1:5000/auth/verify-email", {
       method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-      },
+      ...authHeaders(), // Use authHeaders function
       body: JSON.stringify({ token }),
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Email verification failed:", response.status, errorText);
       throw new Error(`Email verification failed: ${response.statusText}`);
     }
 
@@ -111,5 +115,30 @@ export const verifyEmail = async (token) => {
   } catch (error) {
     console.error("Email Verification Error:", error.message);
     throw error.message || { message: "Email verification failed" };
+  }
+};
+
+// 🟢 Fetch Tasks (Ensure Authorization)
+export const getTasks = async () => {
+  try {
+    console.log("Fetching tasks from API:", `${process.env.REACT_APP_API_URL}/tasks`);
+
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/tasks`, {
+      method: "GET",
+      ...authHeaders(), // Use authHeaders function
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Failed to fetch tasks:", response.status, errorText);
+      throw new Error(`Server responded with ${response.status} - ${errorText}`);
+    }
+
+    const tasks = await response.json();
+    console.log("Tasks fetched successfully:", tasks);
+    return tasks;
+  } catch (error) {
+    console.error("Error fetching tasks:", error.message);
+    throw error;
   }
 };
