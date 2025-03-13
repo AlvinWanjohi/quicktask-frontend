@@ -2,7 +2,7 @@
 QuickTask is a simple freelance platform where businesses and individuals can post small tasks, and freelancers can bid to complete them quickly. This repository contains the React.js frontend for the QuickTask platform.
 
 📌 Features
-✅ User Authentication (Supabase - Email, Google, Apple)
+✅ User Authentication (JWT ,Supabase - Email, Google, Apple)
 ✅ Post and browse available tasks
 ✅ Bid on tasks as a freelancer
 ✅ Real-time notifications for bids, payments, and task updates
