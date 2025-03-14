@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext"; // Import auth context
+import { useAuth } from "../context/AuthContext"; 
 import supabase from "../utils/supabaseClient";
-import { useNavigate } from "react-router-dom"; // For redirection
+import { useNavigate } from "react-router-dom"; 
 
 const MyTasks = () => {
-  const { user, loading } = useAuth(); // Get user state
+  const { user, loading } = useAuth(); 
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [tasksLoading, setTasksLoading] = useState(true);
 
-  // Redirect to login if user is not authenticated
+  
   useEffect(() => {
     if (!loading && !user) {
       navigate("/login");
     }
   }, [user, loading, navigate]);
 
-  // Fetch tasks only when user is available
+  
   useEffect(() => {
     if (user) {
       fetchTasks();
@@ -30,11 +30,11 @@ const MyTasks = () => {
     try {
       const { data, error } = await supabase
         .from("tasks")
-        .select("*")
-        .eq("user_id", user.id); // Fetch only tasks for the logged-in user
+        .select("id, name, bids, deadline, status, user_id")
+        .eq("user_id", user.id);
 
       if (error) {
-        console.error("Error fetching tasks:", error);
+        console.error("Error fetching tasks:", error.message);
       } else {
         setTasks(data);
       }
@@ -45,13 +45,18 @@ const MyTasks = () => {
   };
 
   const deleteTask = async (id) => {
-    const { error } = await supabase.from("tasks").delete().eq("id", id);
-    if (error) {
-      console.error("Error deleting task:", error);
-      alert("Failed to delete task.");
-    } else {
-      setTasks(tasks.filter((task) => task.id !== id));
-      setModalOpen(false);
+    try {
+      const { error } = await supabase.from("tasks").delete().eq("id", id);
+      if (error) {
+        console.error("Error deleting task:", error.message);
+        alert("Failed to delete task.");
+      } else {
+        setTasks(tasks.filter((task) => task.id !== id));
+        setModalOpen(false);
+      }
+    } catch (err) {
+      console.error("Error deleting task:", err);
+      alert("An error occurred while deleting the task.");
     }
   };
 
@@ -71,8 +76,12 @@ const MyTasks = () => {
             {tasks.map((task) => (
               <div key={task.id} className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition">
                 <h3 className="text-xl font-semibold">{task.name}</h3>
-                <p className="text-gray-600 mt-2">Bids Received: <span className="text-indigo-600 font-bold">{task.bids}</span></p>
-                <p className="text-sm text-gray-500 mt-2">Deadline: {task.deadline || "No deadline"}</p>
+                <p className="text-gray-600 mt-2">
+                  Bids Received: <span className="text-indigo-600 font-bold">{task.bids || 0}</span>
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Deadline: {task.deadline ? new Date(task.deadline).toLocaleDateString() : "No deadline"}
+                </p>
                 <p className={`mt-2 font-semibold ${task.status === "Completed" ? "text-green-600" : "text-blue-600"}`}>
                   {task.status || "Open"}
                 </p>
@@ -93,6 +102,7 @@ const MyTasks = () => {
         )}
       </div>
 
+      {/* Delete Confirmation Modal */}
       {modalOpen && selectedTask && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg">
@@ -100,7 +110,9 @@ const MyTasks = () => {
               Are you sure you want to delete <span className="text-red-600">"{selectedTask.name}"</span>?
             </p>
             <div className="mt-4 flex justify-end">
-              <button onClick={() => setModalOpen(false)} className="mr-2 bg-gray-400 px-4 py-2 rounded">Cancel</button>
+              <button onClick={() => setModalOpen(false)} className="mr-2 bg-gray-400 px-4 py-2 rounded">
+                Cancel
+              </button>
               <button onClick={() => deleteTask(selectedTask.id)} className="bg-red-600 text-white px-4 py-2 rounded">
                 Delete
               </button>

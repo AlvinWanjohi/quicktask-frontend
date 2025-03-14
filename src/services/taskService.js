@@ -1,9 +1,8 @@
 import axios from "axios";
 
-// ✅ Define API Base URL - Ensure this matches your backend URL
 const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:5000/api"; 
 
-// ✅ Create an Axios instance for reuse
+
 const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
@@ -11,7 +10,6 @@ const apiClient = axios.create({
   },
 });
 
-// ✅ Helper function for API errors
 const handleApiError = (error, defaultMessage) => {
   if (error.response) {
     console.error(`${defaultMessage}:`, error.response.data);
@@ -25,19 +23,17 @@ const handleApiError = (error, defaultMessage) => {
   }
 };
 
-// ✅ Fetch all tasks (Updated to use Fetch API)
+
 export const getTasks = async () => {
   try {
-    const response = await fetch(`${API_URL}/tasks`);
-    if (!response.ok) throw new Error("Failed to fetch tasks");
-    return await response.json();
+    const response = await apiClient.get("/tasks");
+    return response.data;
   } catch (error) {
-    console.error("Error fetching tasks:", error);
-    throw error;
+    handleApiError(error, "Failed to fetch tasks");
   }
 };
 
-// ✅ Fetch a single task by ID
+
 export const getTaskById = async (taskId, token) => {
   try {
     const response = await apiClient.get(`/tasks/${taskId}`, {
@@ -49,7 +45,7 @@ export const getTaskById = async (taskId, token) => {
   }
 };
 
-// ✅ Create a new task
+
 export const createTask = async (taskData, token) => {
   try {
     const response = await apiClient.post("/tasks", taskData, {
@@ -61,7 +57,7 @@ export const createTask = async (taskData, token) => {
   }
 };
 
-// ✅ Delete a task
+
 export const deleteTask = async (taskId, token) => {
   try {
     const response = await apiClient.delete(`/tasks/${taskId}`, {
@@ -73,7 +69,6 @@ export const deleteTask = async (taskId, token) => {
   }
 };
 
-// ✅ Get bids for a task
 export const getBidsByTaskId = async (taskId, token) => {
   try {
     const response = await apiClient.get(`/tasks/${taskId}/bids`, {
@@ -85,7 +80,7 @@ export const getBidsByTaskId = async (taskId, token) => {
   }
 };
 
-// ✅ Submit a bid
+
 export const submitBid = async (taskId, bidAmount, token) => {
   try {
     const response = await apiClient.post(
@@ -99,7 +94,6 @@ export const submitBid = async (taskId, bidAmount, token) => {
   }
 };
 
-// ✅ Accept a bid
 export const acceptBid = async (bidId, token) => {
   try {
     const response = await apiClient.patch(

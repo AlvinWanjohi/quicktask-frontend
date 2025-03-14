@@ -36,10 +36,10 @@ const Task = () => {
   const [postError, setPostError] = useState(null);
   const [showPostForm, setShowPostForm] = useState(false);
 
-  // Available categories for tasks
+  
   const categories = ["Design", "Programming", "Marketing", "Writing", "Admin", "Customer Service", "Data Entry", "Other"];
   
-  // Available job types
+  
   const jobTypes = ["Full-time", "Part-time", "Contract", "Remote", "Freelance", "Internship"];
 
   useEffect(() => {
@@ -57,11 +57,12 @@ const Task = () => {
       setTasks(data || []);
     } catch (err) {
       setError("Failed to load jobs. Please try again.");
-      toast.error("Failed to load jobs");
+      toast.error(`Failed to load jobs: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const fetchSavedJobs = async () => {
     if (!user) return;
@@ -81,6 +82,8 @@ const Task = () => {
   };
 
   useEffect(() => {
+    if (tasks.length === 0) return; 
+  
     const fetchBids = async () => {
       try {
         const { data, error } = await supabase.from("bids").select("*");
@@ -95,8 +98,10 @@ const Task = () => {
         console.error("Error fetching bids:", err.message);
       }
     };
+  
     fetchBids();
   }, [tasks]);
+  
 
   const filteredTasks = useMemo(() => {
     return tasks
@@ -115,6 +120,7 @@ const Task = () => {
         return 0;
       });
   }, [search, category, jobType, location, sortOrder, tasks, myTasksOnly, user]);
+  
 
   // Pagination
   const paginatedTasks = useMemo(() => {
@@ -129,10 +135,9 @@ const Task = () => {
       toast.error("Please log in to save jobs");
       return;
     }
-
+  
     try {
       if (savedJobs.has(taskId)) {
-        // Unsave the job
         await supabase
           .from("saved_jobs")
           .delete()
@@ -144,15 +149,14 @@ const Task = () => {
           newSet.delete(taskId);
           return newSet;
         });
-        
+  
         toast.success("Job removed from saved jobs");
       } else {
-        // Save the job
         await supabase
           .from("saved_jobs")
           .insert([{ user_id: user.id, task_id: taskId }]);
-        
-        setSavedJobs(prev => new Set([...prev, taskId]));
+  
+        setSavedJobs(prev => new Set([...prev, taskId])); 
         toast.success("Job saved successfully");
       }
     } catch (err) {
@@ -160,19 +164,20 @@ const Task = () => {
       toast.error("Failed to update saved jobs");
     }
   };
+  
 
   const handlePostTask = async (e) => {
     e.preventDefault();
     setPosting(true);
     setPostError(null);
-
+  
     if (!user) {
       setPostError("You must be logged in to post a task.");
       setPosting(false);
       toast.error("Login required");
       return;
     }
-
+  
     try {
       const { data, error } = await supabase.from("tasks").insert([
         {
@@ -187,21 +192,24 @@ const Task = () => {
           created_at: new Date().toISOString(),
         },
       ]).select();
-
+  
       if (error) throw error;
-
+  
       setTasks([...tasks, ...data]);
+      setShowPostForm(false);
+      toast.success("Task posted successfully!");
+  
+      
       setNewTask({ 
         name: "", 
-        category: "Design", 
-        job_type: "Full-time", 
+        category: "", 
+        job_type: "", 
         location: "", 
         budget: "",
         description: "",
         deadline: "" 
       });
-      setShowPostForm(false);
-      toast.success("Task posted successfully!");
+  
     } catch (err) {
       setPostError("Failed to post task. Try again.");
       toast.error("Failed to post task");
@@ -209,6 +217,7 @@ const Task = () => {
       setPosting(false);
     }
   };
+  
 
   const formatDate = (dateString) => {
     if (!dateString) return "No deadline";
