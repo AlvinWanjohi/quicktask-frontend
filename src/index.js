@@ -11,7 +11,7 @@ console.log(" API BASE URL:", process.env.REACT_APP_API_BASE_URL || "Not Defined
 
 
 if (!process.env.REACT_APP_API_BASE_URL) {
-  console.warn("⚠️ Warning: REACT_APP_API_BASE_URL is missing. Make sure you have a .env file in the root directory.");
+  console.warn(" Warning: REACT_APP_API_BASE_URL is missing. Make sure you have a .env file in the root directory.");
 }
 
 const rootElement = document.getElementById("root");

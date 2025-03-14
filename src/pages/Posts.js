@@ -4,7 +4,6 @@ import supabase from "../utils/supabaseClient";
 import { Search, Bell, Calendar, UserPlus, CheckCircle } from "lucide-react";
 
 const Posts = () => {
-  // State management
   const [requests, setRequests] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -22,12 +21,12 @@ const Posts = () => {
 
   const navigate = useNavigate();
 
-  // Fetch all data
+  
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Get user profile
+  
         const { data: userData, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
         
@@ -40,7 +39,6 @@ const Posts = () => {
         
         setUserProfile(profile);
         
-        // Parallel data fetching
         const [
           connectionRequestsResponse,
           suggestedUsersResponse,
@@ -80,7 +78,6 @@ const Posts = () => {
     fetchData();
   }, [refreshTrigger]);
 
-  // Handle connection request actions
   const handleConnectionRequest = async (requestId, action) => {
     try {
       if (action === "accept") {
@@ -106,8 +103,7 @@ const Posts = () => {
     }
   };
 
-  // Handle applying for a task
-  const handleApplyForTask = async (taskId) => {
+   const handleApplyForTask = async (taskId) => {
     try {
       const { error } = await supabase.from("task_applications").insert([{ 
         task_id: taskId,
@@ -119,7 +115,7 @@ const Posts = () => {
       if (error) throw error;
       alert("You have successfully applied for this task!");
       
-      // Notify task creator
+  
       const { data: taskData } = await supabase
         .from("tasks")
         .select("created_by, title")
@@ -140,7 +136,7 @@ const Posts = () => {
     }
   };
 
-  // Handle joining a group
+  
   const handleJoinGroup = async (groupId) => {
     try {
       const { error } = await supabase.from("group_members").insert([{
@@ -157,7 +153,7 @@ const Posts = () => {
     }
   };
 
-  // Handle RSVPing to an event
+  
   const handleRSVP = async (eventId) => {
     try {
       const { error } = await supabase.from("event_attendees").insert([{
@@ -175,7 +171,7 @@ const Posts = () => {
     }
   };
 
-  // Mark all notifications as read
+  
   const markAllNotificationsAsRead = async () => {
     try {
       await supabase
@@ -190,8 +186,7 @@ const Posts = () => {
     }
   };
 
-  // Filter content based on search query
-  const getFilteredContent = (items) => {
+    const getFilteredContent = (items) => {
     return items.filter(item => 
       Object.values(item).some(value => 
         typeof value === 'string' && value.toLowerCase().includes(searchQuery.toLowerCase())
@@ -322,7 +317,7 @@ const Posts = () => {
             {/* Create Post Button */}
             <div className="bg-white shadow-lg rounded-lg p-4">
               <button 
-                onClick={() => navigate("/create-post")}
+                onClick={() => navigate("/tasks")}
                 className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center"
               >
                 <span className="mr-2">Create New Post</span>

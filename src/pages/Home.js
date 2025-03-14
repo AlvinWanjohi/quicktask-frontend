@@ -357,19 +357,19 @@ const Home = () => {
                             <Users className="mx-auto h-12 w-12 text-blue-600" />
                             <h3 className="font-semibold text-lg mt-4">Build Your Network</h3>
                             <p className="text-gray-600 mt-2">Connect with professionals and freelancers in your industry.</p>
-                            <Link to="/networking" className="inline-block mt-4 text-blue-600 hover:underline">Learn More</Link>
+                            <Link to="/posts" className="inline-block mt-4 text-blue-600 hover:underline">Learn More</Link>
                         </div>
                         <div className="bg-white p-6 shadow-lg rounded-lg hover:shadow-xl transition duration-300 text-center">
                             <Briefcase className="mx-auto h-12 w-12 text-green-600" />
                             <h3 className="font-semibold text-lg mt-4">Career Insights</h3>
                             <p className="text-gray-600 mt-2">Get industry trends, job market updates, and career advancement tips.</p>
-                            <Link to="/insights" className="inline-block mt-4 text-green-600 hover:underline">Explore Insights</Link>
+                            <Link to="/posts" className="inline-block mt-4 text-green-600 hover:underline">Explore Insights</Link>
                         </div>
                         <div className="bg-white p-6 shadow-lg rounded-lg hover:shadow-xl transition duration-300 text-center">
                             <Award className="mx-auto h-12 w-12 text-yellow-500" />
                             <h3 className="font-semibold text-lg mt-4">Boost Your Profile</h3>
                             <p className="text-gray-600 mt-2">Showcase your skills, portfolio, and achievements to stand out.</p>
-                            <Link to="/profile-tips" className="inline-block mt-4 text-yellow-500 hover:underline">Upgrade Profile</Link>
+                            <Link to="/userprofile" className="inline-block mt-4 text-yellow-500 hover:underline">Upgrade Profile</Link>
                         </div>
                     </div>
                 </div>

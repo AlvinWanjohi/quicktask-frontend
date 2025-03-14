@@ -11,7 +11,7 @@ const Login = () => {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
-  // Check if user is already logged in
+  
   useEffect(() => {
     const checkUserSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -48,12 +48,12 @@ const Login = () => {
     }
   };
 
-  // Function to handle OAuth Login (Google or Apple)
+  
   const handleOAuthLogin = async (provider) => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: `${window.location.origin}/` }, // Ensures user returns to the app
+        options: { redirectTo: `${window.location.origin}/` }, 
       });
 
       if (error) throw error;
