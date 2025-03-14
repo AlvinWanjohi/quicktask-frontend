@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../utils/supabaseClient';
 
 const HERO_IMAGE_URL =
   'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80';
@@ -46,23 +47,21 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } }
       });
 
-      const result = await response.json();
+      if (error) throw error;
 
-      if (response.ok) {
-        localStorage.setItem('token', result.token);
-        setUser(result.user);
-        navigate('/');
-      } else {
-        setError(result.error || 'Registration failed');
-      }
+      setUser(data.user);
+      localStorage.setItem('token', data.session?.access_token || '');
+
+      navigate('/');
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError(err.message || 'An error occurred. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);

@@ -11,8 +11,8 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { AuthContext } from "../context/AuthContext"; // Ensure this file exists and is correctly exported
-import supabase from "../utils/supabaseClient";
+import { AuthContext } from "../context/AuthContext"; 
+import {supabase} from "../utils/supabaseClient";
 
 const Header = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);

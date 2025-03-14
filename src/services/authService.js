@@ -1,18 +1,17 @@
-import supabase from "../utils/supabaseClient";
+import {supabase} from "../utils/supabaseClient";
 
-// Helper function to get auth token
+
 const getAuthToken = () => localStorage.getItem("token");
 
-// Helper function to set authorization headers
+
 const authHeaders = () => ({
   headers: {
     "Accept": "application/json",
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${getAuthToken()}`, // Ensure Bearer is included
+    "Authorization": `Bearer ${getAuthToken()}`, 
   },
 });
 
-// 🟢 Register User
 export const registerUser = async (userData) => {
   try {
     const { fullName, email, password } = userData;
@@ -33,7 +32,7 @@ export const registerUser = async (userData) => {
     if (user?.id && token) {
       localStorage.setItem("token", token);
 
-      // Update user details in backend
+      // U
       const response = await fetch(`http://127.0.0.1:5000/users/${user.id}`, {
         method: "PUT",
         ...authHeaders(), // Use helper function

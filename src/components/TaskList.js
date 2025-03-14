@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import supabase from "../utils/supabaseClient";
+import {supabase} from "../utils/supabaseClient";
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);

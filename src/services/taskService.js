@@ -1,5 +1,5 @@
 import axios from "axios";
-import { supabase } from "../supabaseClient";
+import { supabase } from "../utils/supabaseClient";
 
 
 const API_URL = process.env.REACT_APP_API_URL || "https://vafwurwclfsusyymptsa.supabase.co/rest/v1";

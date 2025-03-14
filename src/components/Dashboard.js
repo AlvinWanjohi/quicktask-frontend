@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // Corrected import
+import { useAuth } from '../context/AuthContext'; 
 import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const { user, handleLogout } = useAuth(); // Using the useAuth hook to get user and logout function
-  const navigate = useNavigate(); // useNavigate hook for redirecting to login page
+  const { user, handleLogout } = useAuth(); 
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     if (!user) {
-      // Redirect to login page if the user is not authenticated
+      
       navigate('/login');
     }
   }, [user, navigate]);

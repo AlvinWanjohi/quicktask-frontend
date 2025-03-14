@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import supabase from "../utils/supabaseClient";
+import {supabase} from "../utils/supabaseClient";
 import { Search, Bell, Calendar, UserPlus, CheckCircle } from "lucide-react";
 
 const Posts = () => {
@@ -139,17 +139,46 @@ const Posts = () => {
   
   const handleJoinGroup = async (groupId) => {
     try {
-      const { error } = await supabase.from("group_members").insert([{
-        group_id: groupId,
-        user_id: userProfile.id,
-        joined_at: new Date().toISOString()
-      }]);
+      if (!userProfile) {
+        alert("You need to be logged in to join a group.");
+        return;
+      }
       
-      if (error) throw error;
-      setJoinedGroups(prev => [...prev, groupId]);
-    } catch (error) {
-      console.error("Error joining group:", error);
-      alert("Failed to join group. Please try again.");
+      if (joinedGroups.includes(groupId)) {
+        alert("You're already a member of this group.");
+        return;
+      }
+      
+      const { error } = await supabase.from("group_members").insert({
+        user_id: userProfile.id, 
+        group_id: groupId,
+        joined_at: new Date().toISOString() 
+      });
+      
+      if (error) {
+        if (error.code === '23505') { 
+          alert("You're already a member of this group.");
+        } else {
+          console.error("Error joining group:", error);
+          alert("Failed to join the group. Please try again.");
+        }
+      } else {
+        
+        setJoinedGroups(prev => [...prev, groupId]);
+        
+        
+        const { data: groupData } = await supabase
+          .from("groups")
+          .select("name")
+          .eq("id", groupId)
+          .single();
+          
+        
+        alert(`Successfully joined ${groupData?.name || 'the group'}!`);
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      alert("An unexpected error occurred.");
     }
   };
 

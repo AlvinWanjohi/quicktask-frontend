@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext"; 
-import supabase from "../utils/supabaseClient";
+import {supabase} from "../utils/supabaseClient";
 import { useNavigate } from "react-router-dom"; 
 
 const MyTasks = () => {

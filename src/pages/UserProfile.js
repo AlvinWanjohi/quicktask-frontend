@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import supabase from "../utils/supabaseClient";
+import {supabase} from "../utils/supabaseClient";
 import { Edit, UploadCloud, Briefcase, GraduationCap, Globe, Link as LinkIcon, X, Plus, Camera } from "lucide-react";
 
 const UserProfile = () => {
@@ -24,23 +24,32 @@ const UserProfile = () => {
   });
 
   useEffect(() => {
+    console.log("Fetching user with ID:", id);
+  
     if (!id) {
       console.error("No user ID found in URL");
       return;
     }
-
+  
     fetchUser();
   }, [id]);
+  
 
   const fetchUser = async () => {
-    const { data, error } = await supabase.from("users").select("*").eq("id", id).single();
+        const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
 
     if (error) {
       console.error("Error fetching user:", error);
       alert("Failed to fetch user data.");
+    } else if (!data) {
+      console.error("User not found");
+      setLoading(false);
     } else {
-      // Convert skills string to array if needed
-      const parsedUser = {
+          const parsedUser = {
         ...data,
         skills: typeof data.skills === 'string' ? data.skills.split(',').map(s => s.trim()) : (data.skills || [])
       };
@@ -58,7 +67,7 @@ const UserProfile = () => {
   };
 
   const handleSave = async () => {
-    // Convert skills array back to string for storage
+    
     const dataToUpdate = {
       ...formData,
       skills: Array.isArray(formData.skills) ? formData.skills.join(', ') : formData.skills
@@ -97,12 +106,12 @@ const UserProfile = () => {
 
     setUploading(true);
     
-    // Create a unique file name
+    
     const fileExt = file.name.split('.').pop();
     const fileName = `${id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `profile-pictures/${fileName}`;
 
-    // Upload to Supabase Storage
+    
     const { error: uploadError } = await supabase.storage
       .from('avatars')
       .upload(filePath, file);
@@ -114,12 +123,12 @@ const UserProfile = () => {
       return;
     }
 
-    // Get public URL
+  
     const { data: { publicUrl } } = supabase.storage
       .from('avatars')
       .getPublicUrl(filePath);
 
-    // Update user profile with new image URL
+    
     const updatedData = { ...formData, profile_picture: publicUrl };
     const { error: updateError } = await supabase
       .from('users')

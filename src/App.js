@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { TaskProvider } from "./context/TaskContext";
-import supabase from "./utils/supabaseClient";
+import {supabase} from "./utils/supabaseClient";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/Home";
@@ -17,11 +17,13 @@ import Footer from "./components/Footer";
 import TaskDetail from "./components/TaskDetail"; 
 import Bidding from "./components/Bidding";
 import CreateTask from "./components/CreateTask";
-import UserProfile from "./pages/UserProfile"; // ✅ Ensured UserProfile is imported
+import UserProfile from "./pages/UserProfile"
 import Messages from "./pages/Messages";
 import Groups from "./pages/Groups";
 import Posts from "./pages/Posts";
 import Notifications from "./pages/Notifications";
+
+
 
 function Layout({ children }) {
   const location = useLocation();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import supabase from "../utils/supabaseClient";
+import {supabase} from "../utils/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import { Bookmark, Briefcase, MapPin, Search, Users, Clock, Globe, PlusCircle, Filter, ArrowUpDown, Calendar, DollarSign, Bell } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -179,7 +179,12 @@ const Task = () => {
     }
   
     try {
-      const { data, error } = await supabase.from("tasks").insert([
+      const { data: tasks, error } = await supabase
+  .from("tasks")
+  .select("*")
+  .eq("user_id", (await supabase.auth.getUser()).data.user.id);
+([
+  
         {
           name: newTask.name,
           category: newTask.category,

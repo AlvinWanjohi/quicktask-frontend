@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { FaPaperPlane, FaPlus, FaCalendarAlt, FaNewspaper, FaSearch, FaEllipsisH, FaTrash, FaEdit, FaImage, FaFile, FaThumbsUp } from "react-icons/fa";
-import supabase from "../utils/supabaseClient";
+import {supabase} from "../utils/supabaseClient";
 
 const Messages = ({ userId }) => {
   const [messages, setMessages] = useState([]);
