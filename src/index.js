@@ -5,7 +5,14 @@ import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import "./index.css"; 
 
-console.log("API BASE URL:", process.env.REACT_APP_API_BASE_URL);
+
+console.log(" ENV Variables:", process.env);
+console.log(" API BASE URL:", process.env.REACT_APP_API_BASE_URL || "Not Defined");
+
+
+if (!process.env.REACT_APP_API_BASE_URL) {
+  console.warn("⚠️ Warning: REACT_APP_API_BASE_URL is missing. Make sure you have a .env file in the root directory.");
+}
 
 const rootElement = document.getElementById("root");
 
@@ -21,5 +28,5 @@ if (rootElement) {
     </React.StrictMode>
   );
 } else {
-  console.error("Root element not found! Make sure your index.html has a <div id='root'></div>");
+  console.error(" Root element not found! Ensure your index.html contains <div id='root'></div>");
 }
