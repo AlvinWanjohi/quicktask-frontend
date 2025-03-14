@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
-import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
-import "./index.css"; // Tailwind styles
+import { AuthProvider } from "./context/AuthContext";
+import "./index.css"; 
 
 console.log("API BASE URL:", process.env.REACT_APP_API_BASE_URL);
 
