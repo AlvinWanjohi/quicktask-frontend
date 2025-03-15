@@ -14,38 +14,29 @@ export const AuthProvider = ({ children }) => {
 
   const createProfile = async (userId, email) => {
     try {
-      
       const { data: userData, error: userError } = await supabase.auth.getUser();
       
       if (userError || !userData || !userData.user) {
         console.error("Error fetching user data:", userError);
         return;
       }
-  
+
       const userName = userData.user.user_metadata?.full_name || "New User";
-  
 
       const { data, error } = await supabase
         .from("profiles")
-        .insert([{ 
-          id: userId, 
-          email: email, 
-          name: userName 
-        }]);
-  
+        .insert([{ id: userId, email: email, name: userName }]);
+
       if (error) {
         console.error("Error creating profile:", error);
       } else {
         console.log("Profile created:", data);
       }
-  
     } catch (err) {
       console.error("Unexpected error creating profile:", err);
     }
   };
-  
-  
-  
+
   useEffect(() => {
     const fetchUserProfileAndTasks = async () => {
       const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -53,21 +44,21 @@ export const AuthProvider = ({ children }) => {
         console.error("Error fetching user:", userError);
         return;
       }
-  
+
       const userId = userData.user.id;
       const userEmail = userData.user.email;
-  
+
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", userId)
         .maybeSingle(); 
-  
+
       if (profileError) {
         console.error("Error fetching profile:", profileError);
         return;
       }
-  
+
       if (!profileData) {
         console.warn("No profile found, creating one...");
         await createProfile(userId, userEmail);
@@ -76,11 +67,10 @@ export const AuthProvider = ({ children }) => {
         setProfile(profileData);
       }
     };
-  
+
     fetchUserProfileAndTasks();
   }, []);
-  
-  
+
   const getAuthToken = () => localStorage.getItem("token");
 
   useEffect(() => {
@@ -143,26 +133,65 @@ export const AuthProvider = ({ children }) => {
         email: userData.email,
         password: userData.password,
       });
-  
+
       if (error) {
         console.error("Signup error:", error);
         return { success: false, error: error.message };
       }
-  
+
       if (user) {
         await supabase.from("profiles").insert([{ id: user.id, email: user.email }]);
         console.log("Profile created for new user:", user.id);
       }
-  
+
       return { success: true };
     } catch (error) {
       return { success: false, error: "Registration failed. Try again." };
     }
   };
-  
+
+  const joinGroup = async (groupId) => {
+    if (!user) {
+      alert("You need to be logged in to join a group.");
+      return;
+    }
+
+    try {
+      
+      const { data: existingMember, error: checkError } = await supabase
+        .from("group_members")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("group_id", groupId)
+        .single();
+
+      if (checkError && checkError.code !== "PGRST116") {
+        console.error("Error checking group membership:", checkError);
+        return;
+      }
+
+      if (existingMember) {
+        alert("You are already a member of this group.");
+        return;
+      }
+
+      
+      const { error } = await supabase
+        .from("group_members")
+        .insert([{ user_id: user.id, group_id: groupId }]);
+
+      if (error) throw error;
+
+      alert("Successfully joined the group!");
+    } catch (error) {
+      console.error("Error joining group:", error);
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, profile, tasks, loading, login, logout, register, setUser }}>
+    <AuthContext.Provider value={{ 
+      user, profile, tasks, loading, login, logout, register, setUser, joinGroup 
+    }}>
       {children}
     </AuthContext.Provider>
   );

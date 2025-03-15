@@ -153,7 +153,7 @@ function AppContent() {
         <Route path="/posts" element={<ProtectedRoute><Posts /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
 
-        {/* ✅ User Profile Route (Ensured it's included) */}
+        {/* User Profile Route (Ensured it's included) */}
         <Route path="/profile/:id" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
 
         {/* Task Details (Component) */}

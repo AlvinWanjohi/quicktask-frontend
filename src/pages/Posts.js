@@ -143,44 +143,66 @@ const Posts = () => {
         alert("You need to be logged in to join a group.");
         return;
       }
-      
+  
       if (joinedGroups.includes(groupId)) {
         alert("You're already a member of this group.");
         return;
       }
+  
       
-      const { error } = await supabase.from("group_members").insert({
+      const { error: insertError } = await supabase.from("group_members").insert({
         user_id: userProfile.id, 
         group_id: groupId,
-        joined_at: new Date().toISOString() 
+        joined_at: new Date().toISOString(),
       });
-      
-      if (error) {
-        if (error.code === '23505') { 
+  
+      if (insertError) {
+        if (insertError.code === '23505') {
           alert("You're already a member of this group.");
         } else {
-          console.error("Error joining group:", error);
+          console.error("Error joining group:", insertError);
           alert("Failed to join the group. Please try again.");
         }
-      } else {
-        
-        setJoinedGroups(prev => [...prev, groupId]);
-        
-        
-        const { data: groupData } = await supabase
-          .from("groups")
-          .select("name")
-          .eq("id", groupId)
-          .single();
-          
-        
-        alert(`Successfully joined ${groupData?.name || 'the group'}!`);
+        return;
       }
+  
+    
+      const { data: groupData, error: groupError } = await supabase
+        .from("groups")
+        .select("name, group_members")
+        .eq("id", groupId)
+        .single();
+  
+      if (groupError) {
+        console.error("Error fetching group details:", groupError);
+        alert("Joined the group, but failed to update member count.");
+        return;
+      }
+  
+      const updatedMemberCount = (groupData?.group_members || 0) + 1;
+  
+  
+      const { error: updateError } = await supabase
+        .from("groups")
+        .update({ total_members: count })
+        .eq("id", groupId);
+  
+      if (updateError) {
+        console.error("Error updating member count:", updateError);
+        alert("Joined the group, but member count update failed.");
+        return;
+      }
+  
+      setJoinedGroups(prev => [...prev, groupId]);
+  
+      alert(`Successfully joined ${groupData?.name || 'the group'}! Now ${count} members.`);
+      
     } catch (err) {
       console.error("Unexpected error:", err);
       alert("An unexpected error occurred.");
     }
   };
+  
 
   
   const handleRSVP = async (eventId) => {
