@@ -253,7 +253,7 @@ const Messages = ({ userId }) => {
 
   const postUpdate = async () => {
     if (!postContent.trim()) return;
-
+  
     try {
       const newPost = {
         user_id: userId,
@@ -261,13 +261,35 @@ const Messages = ({ userId }) => {
         type: postType,
         created_at: new Date().toISOString(),
       };
-
-      await supabase.from("posts").insert([newPost]);
+  
+      const { data, error } = await supabase.from("posts").insert([newPost]).select("*");
+  
+      if (error) throw error;
+  
+      if (data && data.length > 0) {
+        setPosts((prevPosts) => [data[0], ...prevPosts]);
+      }
+  
       setPostContent("");
     } catch (error) {
       console.error("Error posting update:", error);
     }
   };
+  
+  
+  useEffect(() => {
+    const subscription = supabase
+      .channel("posts")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts" }, (payload) => {
+        setPosts((prevPosts) => [payload.new, ...prevPosts]); 
+      })
+      .subscribe();
+  
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
+  
 
   const filteredMessages = useMemo(() => {
     const filtered = messages.filter(
